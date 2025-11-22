@@ -85,6 +85,75 @@
   background: var(--gray-200);
 }
 
+/* Voice Assistant */
+.voice-assistant {
+  background: var(--gray-100);
+  padding: 2rem;
+  text-align: center;
+}
+
+.voice-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.voice-container h2 {
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+}
+
+.voice-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.voice-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.voice-btn.record {
+  background: var(--primary-green);
+  color: white;
+}
+
+.voice-btn.record:hover:not(:disabled) {
+  background: var(--dark-green);
+}
+
+.voice-btn.stop {
+  background: #ef4444;
+  color: white;
+}
+
+.voice-btn.stop:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.voice-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.transcript {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.transcript h3 {
+  margin-bottom: 0.5rem;
+  color: var(--primary-green);
+}
+
 /* Hero Section */
 .hero {
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);

@@ -63,6 +63,12 @@ export default function JHTClaimPage() {
     },
   });
 
+  // Voice assistant state
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
+
   const toggleStep = (step: number) => {
     setActiveStep(activeStep === step ? 0 : step);
   };
@@ -106,7 +112,7 @@ export default function JHTClaimPage() {
 
     // Here you would typically send data to your API
     console.log('Form Data:', formData);
-    
+
     alert(
       `Pengajuan klaim JHT Anda telah berhasil dikirim!\n\nNomor Referensi: JHT-2025-${Math.floor(Math.random() * 1000000)}\n\nSilakan cek email Anda untuk informasi lebih lanjut.`
     );
@@ -115,6 +121,80 @@ export default function JHTClaimPage() {
     setActiveStep(1);
     setCompletedSteps([]);
     setAgreement(false);
+  };
+
+  // Voice functions
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks: Blob[] = [];
+
+      recorder.ondataavailable = (event) => {
+        chunks.push(event.data);
+      };
+
+      recorder.onstop = async () => {
+        const audioBlob = new Blob(chunks, { type: 'audio/wav' });
+        await sendAudio(audioBlob);
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      recorder.start();
+      setMediaRecorder(recorder);
+      setAudioChunks(chunks);
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Error starting recording:', error);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder && isRecording) {
+      mediaRecorder.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const sendAudio = async (audioBlob: Blob) => {
+    const formDataAudio = new FormData();
+    formDataAudio.append('file', audioBlob, 'audio.wav');
+
+    try {
+      const response = await fetch('/api/agent', {
+        method: 'POST',
+        body: formDataAudio,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setTranscript(result.agent_text);
+
+      // Update form data
+      if (result.formData) {
+        setFormData(prev => ({ ...prev, ...result.formData }));
+      }
+      // Update agreement
+      if (result.agreement !== undefined) {
+        setAgreement(result.agreement);
+      }
+
+      // Play audio
+      const audioData = atob(result.audio_base64);
+      const audioArray = new Uint8Array(audioData.length);
+      for (let i = 0; i < audioData.length; i++) {
+        audioArray[i] = audioData.charCodeAt(i);
+      }
+      const audioBlobResponse = new Blob([audioArray], { type: 'audio/mpeg' });
+      const audioUrl = URL.createObjectURL(audioBlobResponse);
+      const audio = new Audio(audioUrl);
+      audio.play();
+    } catch (error) {
+      console.error('Error sending audio:', error);
+    }
   };
 
   return (
@@ -150,6 +230,36 @@ export default function JHTClaimPage() {
           <div className="hero-image">
             {/* Add your hero image here */}
           </div>
+        </div>
+      </section>
+
+      {/* Voice Assistant */}
+      <section className="voice-assistant">
+        <div className="voice-container">
+          <h2>Asisten Suara untuk Mengisi Formulir</h2>
+          <p>Katakan data yang ingin Anda isi, seperti "Nama saya John Doe" atau "Nomor KPJ 123456789"</p>
+          <div className="voice-controls">
+            <button
+              className="voice-btn record"
+              onClick={startRecording}
+              disabled={isRecording}
+            >
+              {isRecording ? 'Merekam...' : 'Mulai Rekam'}
+            </button>
+            <button
+              className="voice-btn stop"
+              onClick={stopRecording}
+              disabled={!isRecording}
+            >
+              Stop
+            </button>
+          </div>
+          {transcript && (
+            <div className="transcript">
+              <h3>Respons Asisten:</h3>
+              <p>{transcript}</p>
+            </div>
+          )}
         </div>
       </section>
 
