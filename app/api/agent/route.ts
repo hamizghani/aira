@@ -96,6 +96,11 @@ function handleConversation(intent: string, field: string | undefined, value: st
 
     const [step, f] = field.split('.');
     (conversationState.formData as any)[step][f] = extractedValue;
+
+    // Set active step to the step containing the filled field
+    const stepNumber = parseInt(step.replace('step', ''));
+    conversationState.currentStep = stepNumber;
+
     return `Baik, ${f} telah diisi dengan ${extractedValue}. Apa lagi yang ingin Anda isi?`;
   }
 
@@ -192,6 +197,7 @@ export async function POST(request: NextRequest) {
       audio_base64: audioBase64,
       formData: conversationState.formData,
       agreement: conversationState.agreement,
+      activeStep: conversationState.currentStep,
     });
   } catch (error) {
     console.error('Error in agent:', error);

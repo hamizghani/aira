@@ -181,6 +181,10 @@ export default function JHTClaimPage() {
       if (result.agreement !== undefined) {
         setAgreement(result.agreement);
       }
+      // Update active step
+      if (result.activeStep !== undefined) {
+        setActiveStep(result.activeStep);
+      }
 
       // Play audio
       const audioData = atob(result.audio_base64);
