@@ -123,6 +123,23 @@ export default function JHTClaimPage() {
     setAgreement(false);
   };
 
+  // Keyboard shortcut for recording
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Space' && !event.repeat) {
+        event.preventDefault();
+        if (isRecording) {
+          stopRecording();
+        } else {
+          startRecording();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isRecording]);
+
   // Voice functions
   const startRecording = async () => {
     try {
@@ -241,7 +258,7 @@ export default function JHTClaimPage() {
       <section className="voice-assistant">
         <div className="voice-container">
           <h2>Asisten Suara untuk Mengisi Formulir</h2>
-          <p>Katakan data yang ingin Anda isi, seperti "Nama saya John Doe" atau "Nomor KPJ 123456789"</p>
+          <p>Katakan data yang ingin Anda isi, seperti "Nama saya John Doe" atau "Nomor KPJ 123456789". Tekan spasi untuk mulai/menghentikan rekaman.</p>
           <div className="voice-controls">
             <button
               className="voice-btn record"

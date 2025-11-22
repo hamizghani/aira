@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
     const agentText = handleConversation(intent, field, transcript);
 
     // TTS
-    const ttsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM`, {
+    const ttsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/JBFqnCBsd6RMkjVDRZzb`, {
       method: 'POST',
       headers: {
         'Accept': 'audio/mpeg',
@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         text: agentText,
-        model_id: 'eleven_turbo_v2',
+        model_id: 'eleven_multilingual_v2',
         output_format: 'mp3_44100_128',
       }),
     });

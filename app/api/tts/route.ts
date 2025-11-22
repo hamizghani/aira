@@ -4,10 +4,10 @@ export async function POST(request: NextRequest) {
     const { text }: { text: string } = await request.json();
 
     console.log(`Incoming text to synthesize: ${text}`);
-    console.log(`Model used: eleven_turbo_v2`);
+    console.log(`Model used: eleven_multilingual_v2`);
     console.log(`Voice used: JBFqnCBsd6RMkjVDRZzb`);
 
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM`, {
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/JBFqnCBsd6RMkjVDRZzb`, {
       method: 'POST',
       headers: {
         'Accept': 'audio/mpeg',
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         text,
-        model_id: 'eleven_turbo_v2',
+        model_id: 'eleven_multilingual_v2',
         output_format: 'mp3_44100_128',
       }),
     });
